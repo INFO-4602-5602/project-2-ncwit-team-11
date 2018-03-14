@@ -128,7 +128,7 @@ sourcem = ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_summ=declared_sums_m
 sourcetot= ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_sumtot=declared_sums_tot))
 
 # create figure for bar chart
-p = figure(x_range=Maj_mat,plot_width=800, plot_height=500, title="Graduation to enrollment ratio Female",toolbar_location=None, tools="")
+p = figure(x_range=Maj_mat,plot_width=800, plot_height=500, title="Total enrolled by major (Male, Female or Total)",toolbar_location=None, tools="")
 p.y_range.start = 0
 p.xaxis.major_label_orientation = pi/4
 ff = p.vbar(x='CIP_matf', top='dec_sumf', width=0.9, source=sourcef)
