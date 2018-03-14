@@ -30,7 +30,9 @@ def basicInfo(filename):
     val_idx = np.invert(null_idx.as_matrix())
     dat = dat.iloc[val_idx]
     rows_tot = dat.shape[0]
-    
+    dat['NCWIT Participant'] = dat['NCWIT Participant'].map({'Extension Services, Academic Alliance':'Extension Services', 
+                            'Academic Alliance':'Academic Alliance','Academic Alliance, Academic Alliance':'Academic Alliance',
+                            'Academic Alliance, IPEDS':'Academic Alliance'})
     return dat
 
 
@@ -162,6 +164,7 @@ hover = HoverTool(tooltips=[
                     ('# Left Institution','@tooltip2')
                     ])
 ff = p.vbar(x='CIP_matf', top='dec_sumf', width=0.9, source=sourcef)
+print(ff)
 mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem)
 ff.visible = False
 mm.visible = False
