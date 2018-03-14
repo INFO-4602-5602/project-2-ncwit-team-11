@@ -37,7 +37,7 @@ also compiled information about the visualizations and design process. Shruthi
 was responsible for creating our first visualization. Shantanu was responsible
 for creating our second visualizations. Andrew was responsible for creating our
 third visualization. All members were involved with deciding which attributes
-to visualize and how to visualize them. We uses a bar plot for the first
+to visualize and how to visualize them. We used a bar plot for the first
 visualization to maintain distinction between majors, while we used line graphs
 for the second and third visualizations to create a sense of continuity over
 time.
