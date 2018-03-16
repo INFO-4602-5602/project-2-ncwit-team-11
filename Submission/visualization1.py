@@ -70,6 +70,7 @@ def roundupCIPvals(CIP_mat,decl_sums, grad_sums, left_inst_sums, prop_ES):
 
 def retDictionaryMajors(CIP,decl_sums, grad_sums, left_inst_sums, prop_ES):
 
+# Consolidate CIP # with 2 decimal points and assign majors correpsondingly
     keys = ['Computer Science',
              'Computer and Information Sciences',
              'Management Information Systems',
@@ -163,7 +164,7 @@ p1 = Paragraph(text=
         NOTE: When toggling from Male to Female and vice versa, the y axis range changes. This is because number of females declaring their majors
         was far lower than the number of males. When the axis was kept constant, the female data wasn't quite as salient. Based on Dr. Lecia Barker's comments,
         it seemed that NCWIT was interested especially in the data pertaining to females, so we chose salience over consistency.""",
-     style={"font-size": "18px"}, width=1000, height=145)
+     style={"font-size": "18px"}, width=1000, height=155)
 p2 = Paragraph(text=
     """We see that for both males and females, the most dominant major is Computer Science. Hoevering over the bars in the bar chart reveals a tooltip
         that shows the total number of students who graduated and also those who left the institution for the corresponding majors. The colors of the bars
@@ -235,29 +236,14 @@ for p in propEStot:
     palettetot.append(code)
     i=i+1
 
-code_maxf = palettef[propESf.index(max(propESf))]
-code_maxm = palettem[propESm.index(max(propESm))]
+
 code_maxtot = palettetot[propEStot.index(max(propEStot))]
 
-linspf = np.linspace(0,1,100)*255
-linspf = linspf.tolist()
-linspm = np.linspace(0,1,100)*255
-linspm = linspm.tolist()
 linsptot = np.linspace(0,1,100)*255
 linsptot = linsptot.tolist()
 
-p_colorbarf = ['#%02x%02x%02x' % (int(np.around(r,0)),int(np.around(g,0)),int(b) ) for (r,g,b) in zip(linspf, linspf, [255]*100) ]
-p_colorbarm = ['#%02x%02x%02x' %  (int(np.around(r,0)),int(np.around(g,0)),int(b) ) for (r,g,b) in zip(linspm, linspm, [255]*100) ]
+
 p_colorbartot = ['#%02x%02x%02x' %  (int(np.around(r,0)),int(np.around(g,0)),int(b) ) for (r,g,b) in zip(linsptot, linsptot, [255]*100) ]
-
-# print(p_colorbartot)
-# print(max(propESf))
-# print(max(propESm))
-# print(max(propEStot))
-
-print(palettef)
-print(palettem)
-print(palettetot)
 # define data source for bokeh
 sourcef = ColumnDataSource(data=dict(CIP_matf =Maj_mat,dec_sumf=declared_sums_f,tooltip1= graduated_sum_f,tooltip2= left_inst_sum_f ))
 sourcem = ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_summ=declared_sums_m,tooltip1= graduated_sum_m,tooltip2=left_inst_sum_m ))
@@ -273,24 +259,21 @@ hover = HoverTool(tooltips=[
                     ('# Left Institution','@tooltip2')
                     ])
 
-mapperf = LinearColorMapper(palette=p_colorbarf , low=0, high=max(propESf))
-mapperm = LinearColorMapper(palette=p_colorbarm , low=0, high=max(propESm))
-mappertot = LinearColorMapper(palette=p_colorbartot , low=0, high=1)
 
-mapperf.low_color=  '#0000ff'
-mapperf.high_color = code_maxf
-mapperm.low_color=  '#0000ff'
-mapperm.high_color = code_maxm
-mappertot.low_color=  '#0000ff'
-mappertot.high_color = code_maxtot
-# mappertot.high_color = '#ffffff'
+mapper = LinearColorMapper(palette=p_colorbartot , low=0, high=1)
+
+mapper.low_color=  '#0000ff'
+mapper.high_color = code_maxtot
+
 ff = p.vbar(x='CIP_matf', top='dec_sumf', width=0.9, source=sourcef, fill_color=factor_cmap('CIP_matf', palette=palettef, factors=Maj_mat ) )
 mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem, fill_color=factor_cmap('CIP_matm', palette=palettem, factors=Maj_mat) )
 ff.visible = False
 mm.visible = False
 tot =  p.vbar(x='CIP_matm', top='dec_sumtot', width=0.9, source=sourcetot, fill_color=factor_cmap('CIP_matm', palette=palettetot, factors=Maj_mat) )
 
-color_bar = ColorBar(color_mapper=mappertot, location=(0,0))
+# Create colorbar object 
+color_bar = ColorBar(color_mapper=mapper, location=(0,0))
+
 # Create checkbox
 checkbox_group = CheckboxGroup(labels=["Female", "Male"], active=[0, 1])
 
@@ -332,16 +315,15 @@ for w in [checkbox_group]:
     w.on_change('active',respond_toggle)
 p.left[0].formatter.use_scientific = False
 
-p.xaxis.axis_label_text_font_size = "18px"
-p.xaxis.major_label_text_font_size = "18px"
+p.xaxis.axis_label_text_font_size = "15px"
+p.xaxis.major_label_text_font_size = "15px"
 
 p.yaxis[0].formatter = NumeralTickFormatter(format='0,0')
 p.yaxis.axis_label_text_font_size = "18px"
 p.yaxis.major_label_text_font_size = "18px"
 
 options = widgetbox(checkbox_group)
-# doc_layout = layout(column(options))
-# Define layout of glyphs on the page
+
 layout = column(div_title, row(p, checkbox_group), p1, p2, p3)
 curdoc().clear()
 curdoc().add_root(layout)
