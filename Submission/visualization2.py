@@ -280,14 +280,12 @@ topyval = max(max(ratiogradex),max(ratiogradaa),max(ratioenrollex),max(ratioenro
 topyval = topyval + float(topyval/10)
 
 # Make title
-div_title_filler = Div(text="""ahhhhhhhhhhhhhhhhhhhhh""", #&nbsp &nbsp &nbsp
-                       style={"font-size": "30px", "text-align": "center"}, width=600, height=80)
 div_title = Div(text="""&nbsp &nbsp &nbsp &nbsp &nbsp Ratio of Female to Male Students for 
 	                    &nbsp &nbsp &nbsp &nbsp &nbsp Extension Services vs. Academic Alliance""",
                 style={"font-size": "30px", "text-align": "center"}, width=750, height=80)
 
 #   Plotting the first visualization -> for the Graduated Attribute
-p1 = figure(x_range=yrex, y_range=(0,topyval), plot_height=500, plot_width=1000,
+p1 = figure(x_range=yrex_en, y_range=(0,topyval), plot_height=500, plot_width=1000,
             x_axis_label='School Year', y_axis_label='Female to Male Ratio', tools="pan,wheel_zoom,box_zoom,reset")
 l1_ES = p1.line(yrex_en, ratioenrollex, line_width=2, color='red', line_dash="4 4", muted_alpha=0.2)
 l1_AA = p1.line(yraa_en, ratioenrollaa, line_width=2, color='blue', muted_alpha=0.2)
@@ -312,7 +310,7 @@ p1.toolbar.logo = None
 tab1 = Panel(child=p1, title="New Enrollments")
 
 #   Plotting the first visualization -> for the New Enrollments Attribute
-p2 = figure(x_range=yrex_en, y_range=(0,topyval), plot_height=500, plot_width = 1000,
+p2 = figure(x_range=yrex, y_range=(0,topyval), plot_height=500, plot_width = 1000,
             x_axis_label='School Year', y_axis_label='Female to Male Ratio', tools="pan,wheel_zoom,box_zoom,reset")
 l2_ES = p2.line(yrex, ratiogradex, line_width=2, color='red', line_dash="4 4", muted_alpha=0.2)
 l2_AA = p2.line(yraa, ratiogradaa, line_width=2, color='blue', muted_alpha=0.2)
