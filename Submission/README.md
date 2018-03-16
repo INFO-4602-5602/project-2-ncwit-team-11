@@ -19,6 +19,7 @@ Corresponding code: visualization2.py
 Our third visualization is an interactive line graph that distinguishes between schools that offer Bachelor’s degrees only, Bachelor’s and Master’s degrees, or Bachelor’s, Master’s, and Ph.D. degrees. The user can choose to visualize the number of female new enrollments, total graduated, or left institution each year. These data are normalized by the number of institutions, and the tooltip shows the number of institutions for each year. We chose to update the y-xis range depending on the information being shown because there are about 9 times as many females enrolled per institution than females who left per institution, so the "left institution" display would result in a very small visualization if we were to keep the y-axis range constant.
 
 
+
 Corresponding code: visualization3.py
 
 
