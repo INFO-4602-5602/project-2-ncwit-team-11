@@ -363,16 +363,17 @@ tab3 = Panel(child=p3, title="Left Institution")
 
 # Make paragraph sections for discussion
 par1 = Paragraph(text=
-    """First paragraph...""",
+    """This visualization shows the ratio of the number of female students to the number of male studnets
+       each year who have (i) newly enrolled, (ii) graduated, or (iii) left their institution without graduating.
+       We separated the totals by the type of NCWIT involvement (Academic Alliance vs. Extension Services).
+       Data for programs in the Academic Alliance is only available for more recent years while data for
+       programs using Extension Services is available as far back as the 2003-2004 school year. Across all
+       three attributes, we notice that the ratio of females to males for programs using Extension Services
+       is more constant from year to year compared to Academic Alliance.""",
      style={"font-size": "18px"}, width=1000, height=100)
-par2 = Paragraph(text=
-    """Second paragraph....""",
-     style={"font-size": "18px"}, width=1000, height=125)
-par3 = Paragraph(text=
-    """Third paragraph...""",
-     style={"font-size": "18px"}, width=1000, height=125)
+
 
 tabs = Tabs(tabs=[tab1, tab2, tab3], width=400)
-layout = column(div_title, tabs, par1, par2, par3)
+layout = column(div_title, tabs, par1)
 curdoc().add_root(layout)
 curdoc().title = "Visualization 2"
