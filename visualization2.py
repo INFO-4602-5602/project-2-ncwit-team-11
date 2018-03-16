@@ -33,10 +33,32 @@ years.sort()
 
 #   Handling Missing Data -> Fill all the empty columns with 0's
 ncwit['Totals, Female: Graduated (Tot. F)'] = ncwit['Totals, Female: Graduated (Tot. F)'].fillna(0)
-totgradf = ncwit['Totals, Female: Graduated (Tot. F)']
 
-#   Doing the exact same thing for New Female Enrollments
-ncwit['Enroll, Female: New Enrollments (Enrl F)'] = ncwit['Enroll, Female: New Enrollments (Enrl F)'].fillna(0)
+#   Now repeating the lines 43 - 56 but for Males
+ncwit['Totals, Male: Graduated (Tot. M)'] = ncwit['Totals, Male: Graduated (Tot. M)'].fillna(0)
+
+#   Create a dictionary to have the total sum of males graduated per year
+#   In extension services
+yearctmgrad = {}
+for y in years:
+    yearctmgrad[y] = float(0)
+for index,row in ncwit.iterrows():
+    if row['NCWIT Participant'] == 'Extension Services':
+        yearctmgrad[row['School Year']] += row['Totals, Male: Graduated (Tot. M)']
+
+#   Plot only for those years which have a certain value of males
+#   Otherwise we get a divide by 0 situation -> we don't want that
+#   For laying out the X axis of the plot
+yrex = []
+for key, value in sorted(yearctmgrad.items()):
+    if value != float(0):
+        yrex.append(key)
+
+#   Creating a new array that will store only the counts for every year
+malegradex = []
+for key,value in sorted(yearctmgrad.items()):
+    if key in yrex:
+        malegradex.append(value)
 
 #   Create a dictionary to have the total sum of females graduated per year
 #   In extension services
@@ -61,7 +83,26 @@ yr = []
 for val in years:
     yr.append(val)
 
-#   Now do the exact same thing (from lines 43 - 56) but for Academic Alliance
+#   Repeating 42-61 for Academic Alliance
+yearctmgrad_aa = {}
+for y in years:
+    yearctmgrad_aa[y] = float(0)
+for index,row in ncwit.iterrows():
+    if row['NCWIT Participant'] == 'Academic Alliance':
+        yearctmgrad_aa[row['School Year']] += row['Totals, Male: Graduated (Tot. M)']
+
+#   Same thing but for Academic Alliance
+yraa = []
+for key, value in sorted(yearctmgrad_aa.items()):
+    if value != float(0):
+        yraa.append(key)
+
+malegradaa = []
+for key,value in sorted(yearctmgrad_aa.items()):
+    if key in yraa:
+        malegradaa.append(value)
+
+#   Now do the exact same thing but for Academic Alliance
 yearctfgrad_aa = {}
 for y in years:
     yearctfgrad_aa[y] = float(0)
@@ -73,49 +114,6 @@ femalegradaa = []
 for key,value in sorted(yearctfgrad_aa.items()):
     if key in yraa:
         femalegradaa.append(value)
-
-#   Now repeating the lines 43 - 56 but for Males
-yearctmgrad = {}
-for y in years:
-    yearctmgrad[y] = float(0)
-for index,row in ncwit.iterrows():
-    if row['NCWIT Participant'] == 'Extension Services':
-        yearctmgrad[row['School Year']] += row['Totals, Male: Graduated (Tot. M)']
-
-malegradex = []
-for key,value in sorted(yearctmgrad.items()):
-    if key in yrex:
-        malegradex.append(value)
-
-#   Repeating Lines 78 - 88 but for Academic Alliance
-ncwit['Totals, Male: Graduated (Tot. M)'] = ncwit['Totals, Male: Graduated (Tot. M)'].fillna(0)
-
-yearctmgrad_aa = {}
-for y in years:
-    yearctmgrad_aa[y] = float(0)
-for index,row in ncwit.iterrows():
-    if row['NCWIT Participant'] == 'Academic Alliance':
-        yearctmgrad_aa[row['School Year']] += row['Totals, Male: Graduated (Tot. M)']
-
-malegradaa = []
-for key,value in sorted(yearctmgrad_aa.items()):
-    if key in yraa:
-        malegradaa.append(value)
-
-#   Plot only for those years which have a certain value of males
-#   Otherwise we get a divide by 0 situation -> we don't want that
-#   For laying out the X axis of the plot
-yrex = []
-for key, value in sorted(yearctmgrad.items()):
-    if value != float(0):
-        yrex.append(key)
-
-#   Same thing but for Academic Alliance
-yraa = []
-for key, value in sorted(yearctmgrad_aa.items()):
-    if value != float(0):
-        yraa.append(key)
-
 
 #    We have eveything now so just get the ratio
 #    For Extension Services
@@ -306,7 +304,7 @@ p2.legend.location = "top_center"
 p2.legend.click_policy="hide"
 tab2 = Panel(child=p2,title="Enrolled")
 
-#   #   Plotting the first visualization -> for the Left Institution Attribute
+#   Plotting the first visualization -> for the Left Institution Attribute
 p3 = figure(x_range=yrex_le, y_range=(0,topyval), plot_height=500, plot_width = 1000, title="Visualization 2", x_axis_label='School Year', y_axis_label='Females to Male Ratio')
 p3.line(yrex_le, ratioleftex, legend="Extension Services", line_width=2, color = 'red', line_dash="4 4")
 p3.line(yraa_le, ratioleftaa, legend="Academic Alliance", line_width=2, color = 'blue')
