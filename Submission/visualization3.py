@@ -30,21 +30,21 @@ div_RadGroup = Div(text="""Select Data Source: &nbsp""",
 	               style={"font-size": "18px", "text-align": "right"}, width=400, height=40)
 
 # Make drop-down menu
-radio_button_group = RadioButtonGroup(labels=["New Enrollments", "Graduated", "Left Institution"], 
+radio_button_group = RadioButtonGroup(labels=["New Enrollments", "Graduated", "Left Institution"],
 	                                  active=0, width=600)
 
 # Make paragraph sections for discussion
 p1 = Paragraph(text=
 	"""This visualization shows the total numbers of female students each year who have (i) newly enrolled,
 	   (ii) graduated, or (iii) left their institution without graduating. These totals are normalized by
-	   the number institutions included in the sum. Note that the normalizing number of institutions for 
+	   the number of institutions included in the sum. Note that the normalizing number of institutions for
 	   each data point is displayed in the tooltip. Additionally, we separated the totals by the types of
 	   degrees offered by the institution. This allows us to compare data for various types of institutions
 	   directly.""",
 	 style={"font-size": "18px"}, width=1000, height=100)
 p2 = Paragraph(text=
-	"""The first thing we notice is that there is very limited data for institutions only offering a 
-	   Bachelor's degree. This makes it difficult to make any inferences for this data. In comparing 
+	"""The first thing we notice is that there is very limited data for institutions only offering a
+	   Bachelor's degree. This makes it difficult to make any inferences for this data. In comparing
 	   institutions that offer Ph.D.'s versus those that don't, we notice that the Ph.D. institutions
 	   have larger numbers of female students enrolling and graduating while having relatively comparable
 	   numbers of female students leaving the institution. Perhaps there is some aspect of research-based
@@ -52,14 +52,14 @@ p2 = Paragraph(text=
 	 style={"font-size": "18px"}, width=1000, height=125)
 p3 = Paragraph(text=
 	"""Next, we examine trends over the years. First, we notice that Ph.D. institutions have large numbers
-	   of female students per institution across all three categories in 2003-2004. By using the tooltip, 
+	   of female students per institution across all three categories in 2003-2004. By using the tooltip,
 	   we notice that these data points contain relatively few institutions. In later years, the number of
-	   Ph.D institutions grows significantly which likely accounts for the initial decline in these 
+	   Ph.D institutions grows significantly, which likely accounts for the initial decline in these
 	   normalized numbers. In more recent years, we see strong growth in the numbers of newly enrolled and
-	   graduated female students from Ph.D institutions. Bachelor's and Master's insitutions display some 
-	   growth in new female enrollments as well as a temporary bump in graduated female students. However, 
-	   both categories of institutions see similar trends in the number of female students leaving without 
-	   graduating. This again suggests that institutions offering Ph.D. programs are performing better in 
+	   graduated female students from Ph.D institutions. Bachelor's and Master's insitutions display some
+	   growth in new female enrollments as well as a temporary bump in graduated female students. However,
+	   both categories of institutions see similar trends in the number of female students leaving without
+	   graduating. This again suggests that institutions offering Ph.D. programs are performing better in
 	   terms of recruitment and retention of female students.""",
 	 style={"font-size": "18px"}, width=1000, height=125)
 
@@ -92,7 +92,7 @@ def gather_data(data_flag):
 
 		# Remove data for institutions offering different degrees
 		dat_deg = dat2[dat2["What degrees does your institution offer?"] == deg]
-				
+
 		x_dat, y_dat, num_insts = [], [], []
 		for yr in yrs:
 

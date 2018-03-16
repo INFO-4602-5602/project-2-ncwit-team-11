@@ -3,7 +3,7 @@ from __future__ import division
 from os.path import join, dirname
 from math import pi
 import pandas as pd
-import numpy as np 
+import numpy as np
 from bokeh.io import show, export_png, output_file, curdoc
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, NumeralTickFormatter, HoverTool,LinearColorMapper, ColorBar
@@ -24,14 +24,14 @@ def findind(lst,val):
 #Read in data file
 def basicInfo(filename):
     ''' Filename should be .csv'''
-    
+
     dat = pd.read_csv(filename,dtype={'CIP# Only':'unicode'})
     d = dat['Record#']
     null_idx = d.isnull()
     val_idx = np.invert(null_idx.as_matrix())
     dat = dat.iloc[val_idx]
     rows_tot = dat.shape[0]
-    dat['NCWIT Participant'] = dat['NCWIT Participant'].map({'Extension Services, Academic Alliance':'Extension Services', 
+    dat['NCWIT Participant'] = dat['NCWIT Participant'].map({'Extension Services, Academic Alliance':'Extension Services',
                             'Academic Alliance':'Academic Alliance','Academic Alliance, Academic Alliance':'Academic Alliance',
                             'Academic Alliance, IPEDS':'Academic Alliance'})
     return dat
@@ -39,16 +39,16 @@ def basicInfo(filename):
 
 # Round up CIP #  to two decimal places
 def roundupCIPvals(CIP_mat,decl_sums, grad_sums, left_inst_sums, prop_ES):
-    
+
     CIP_int = []
     for i in range(len(CIP_mat)):
         if CIP_mat[i] != '?':
             CIP_int.append(np.around(float(CIP_mat[i]),2))
         else:
             CIP_int.append(0)
-    
+
     CIP_int_unique = list(np.unique(np.array(CIP_int)))
-    
+
     dec_sums_arr = np.array(decl_sums)
     grad_sums_arr= np.array(grad_sums)
     left_inst_sums_arr= np.array(left_inst_sums)
@@ -63,13 +63,13 @@ def roundupCIPvals(CIP_mat,decl_sums, grad_sums, left_inst_sums, prop_ES):
         left_sums_aug.append(np.sum(left_inst_sums_arr[find(CIP_int,cip_no)]))
         prop_ES_aug.append( np.nansum(prop_ES[find(CIP_int,cip_no)]) )
 
-        
+
     CIP_int_unique = [str(c) for c in CIP_int_unique]
 
     return CIP_int_unique, dec_sums_aug, grad_sums_aug, left_sums_aug, prop_ES
 
 def retDictionaryMajors(CIP,decl_sums, grad_sums, left_inst_sums, prop_ES):
-    
+
     keys = ['Computer Science',
              'Computer and Information Sciences',
              'Management Information Systems',
@@ -83,24 +83,24 @@ def retDictionaryMajors(CIP,decl_sums, grad_sums, left_inst_sums, prop_ES):
              'CS and Media',
              'Telecom',
              'Computer Administration']
-             
+
 
     vals = [11.07, 11.01, 52.12, 14.09, 14.10, 14.19, 14.27, 11.04, 11.02, 11.05, 11.08, 11.09, 11.10]
-    
+
     hash = {k:v for k, v in zip(keys, vals)}
-    
+
     majs  = [keys[findind(vals,CIP[i])[0]] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
     decl_sums = [decl_sums[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
     grad_sums = [grad_sums[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
     left_inst_sums = [left_inst_sums[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
-    prop_ES = [prop_ES[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ] 
+    prop_ES = [prop_ES[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
     return majs, decl_sums, grad_sums, left_inst_sums, prop_ES
-    
+
 def retrieveEnroll(mf):
 
-    dat = basicInfo("NCWIT_DataV2.csv");    
+    dat = basicInfo("NCWIT_DataV2.csv");
     rows = dat.shape[0]
-    
+
     CIP_col = dat['CIP# Only']
     CIP_mat = CIP_col.as_matrix()
     CIP_mat = np.unique( np.unique(CIP_mat))
@@ -108,8 +108,8 @@ def retrieveEnroll(mf):
     left_inst_sum = []
     declared_sum = []
     declared_ES = []
-    
-    for i in range(len(CIP_mat)): 
+
+    for i in range(len(CIP_mat)):
         dd= dat[dat['CIP# Only']==CIP_mat[i]]
         ddE = dd[dd['NCWIT Participant'] == 'Extension Services']
         if mf == 'F':
@@ -122,7 +122,7 @@ def retrieveEnroll(mf):
             declared_ES.append(np.nansum(ddE['Totals, Male: Total Declared Majors (Tot. M)'].as_matrix()))
             graduated_sum.append(np.nansum(dd['Totals, Male: Graduated (Tot. M)'].as_matrix()))
             left_inst_sum.append(np.nansum(dd['Totals, Male: Left Institution (not graduated) (Tot. M)'].as_matrix()))
-            
+
     CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES = roundupCIPvals(CIP_mat,declared_sum,graduated_sum, left_inst_sum, declared_ES)
     CIP_mat = np.array(CIP_mat)
     declared_array = np.array(declared_sum)
@@ -138,13 +138,13 @@ def retrieveEnroll(mf):
     graduated_sum = graduated_sum.tolist()
     left_inst_sum =left_inst_sum[declared_idx]
     left_inst_sum = left_inst_sum.tolist()
-    
+
     declared_sum = declared_sum[::-1]
     CIP_mat = CIP_mat[::-1]
     graduated_sum = graduated_sum[::-1]
     left_inst_sum = left_inst_sum[::-1]
     declared_ES = declared_ES[::-1]
-    
+
     return CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES
 
 # Make paragraph section for discussion
@@ -154,20 +154,21 @@ div_title = Div(text="""Distribution of total number of majors decalred for male
 # Make paragraph section for discussion
 div_RadGroup = Div(text="""Select Data Source: &nbsp""",
                    style={"font-size": "18px", "text-align": "right"}, width=400, height=40)
-                   
+
 # Make paragraph sections for discussion
 p1 = Paragraph(text=
     """The goal of the visualization is to display the distribution by majors of the total number of students who declared
-        their majors. The data was summed across years to get a sense of the distribution for the entire time frame. The checkbox group on the right 
-        can be used to toggle between Male and Female data. When both are selected, the graph displays the total number of students (male and female). 
+        their majors. The data was summed across years to get a sense of the distribution for the entire time frame. The checkbox group on the right
+        can be used to toggle between Male and Female data. When both are selected, the graph displays the total number of students (male and female).
         NOTE: When toggling from Male to Female and vice versa, the y axis range changes. This is because number of females declaring their majors
         was far lower than the number of males. When the axis was kept constant, the female data wasn't quite as salient. Based on Dr. Lecia Barker's comments,
-        it seemed that NCWIT was interested especially in the data pertaining to females. So we chose salience over consistency.""",
+        it seemed that NCWIT was interested especially in the data pertaining to females, so we chose salience over consistency.""",
      style={"font-size": "18px"}, width=1000, height=145)
 p2 = Paragraph(text=
     """We see that for both males and females, the most dominant major is Computer Science. Hoevering over the bars in the bar chart reveals a tooltip
         that shows the total number of students who graduated and also those who left the institution for the corresponding majors. The colors of the bars
-        indicate the proportion of NCWIT participants who were part of the Extended Services program. """,
+        indicate the proportion of NCWIT participants who were part of the Extension Services program - lighter bar color indicates a greater proportion of
+        NCWIT participants who were part of the Extension Services program.""",
      style={"font-size": "18px"}, width=1000, height=125)
 p3 = Paragraph(text=
     """ """,
@@ -197,7 +198,7 @@ for p in propESf:
     if p>1:
         p= 0
         propESf[i] = 0
-        
+
     r = int(p*200)
     g = int(p*200)
     b = 255
@@ -221,7 +222,7 @@ for p in propESm:
         code_maxm = code
     palettem.append(code)
     i=i+1
-    
+
 i=0
 for p in propEStot:
     if p>1:
@@ -237,7 +238,7 @@ for p in propEStot:
 code_maxf = palettef[propESf.index(max(propESf))]
 code_maxm = palettem[propESm.index(max(propESm))]
 code_maxtot = palettetot[propEStot.index(max(propEStot))]
-    
+
 linspf = np.linspace(0,max(propESf),100)*200
 linspf = linspf.tolist()
 linspm = np.linspace(0,max(propESf),100)*200
@@ -266,7 +267,7 @@ hover = HoverTool(tooltips=[
                     ('# Graduated', '@tooltip1'),
                     ('# Left Institution','@tooltip2')
                     ])
-                    
+
 mapperf = LinearColorMapper(palette=p_colorbarf , low=0, high=max(propESf))
 mapperm = LinearColorMapper(palette=p_colorbarm , low=0, high=max(propESm))
 mappertot = LinearColorMapper(palette=p_colorbartot , low=0, high=max(propEStot))
@@ -292,7 +293,7 @@ checkbox_group = CheckboxGroup(labels=["Female", "Male"], active=[0, 1])
 def respond_toggle(attr, old, new):
 
     if len(checkbox_group.active)<2:
-        tot.visible= False 
+        tot.visible= False
         if 0 in checkbox_group.active:
             ff.visible = True
             mm.visible = False
@@ -310,7 +311,7 @@ def respond_toggle(attr, old, new):
         else:
             ff.visible = False
             mm.visible = False
-        
+
     else:
         tot.visible = 1 in checkbox_group.active
         ff.visible = False
@@ -339,4 +340,3 @@ layout = column(div_title, row(p, checkbox_group), p1, p2, p3)
 curdoc().clear()
 curdoc().add_root(layout)
 curdoc().title = "checkbox"
-
