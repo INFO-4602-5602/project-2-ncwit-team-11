@@ -6,13 +6,14 @@ import pandas as pd
 import numpy as np 
 from bokeh.io import show, export_png, output_file, curdoc
 from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, NumeralTickFormatter, HoverTool
+from bokeh.models import ColumnDataSource, NumeralTickFormatter, HoverTool,LinearColorMapper, ColorBar
 from bokeh.models.widgets import CheckboxGroup
 from bokeh.layouts import row, widgetbox, layout, column
 from bokeh.palettes import Spectral6
+from bokeh.transform import factor_cmap
 import pdb
 import logging
-from operator import add
+from operator import add, truediv
 
 def find(lst,val):
     return [x==val for x in lst]
@@ -37,7 +38,7 @@ def basicInfo(filename):
 
 
 # Round up CIP #  to two decimal places
-def roundupCIPvals(CIP_mat,decl_sums, grad_sums, left_inst_sums):
+def roundupCIPvals(CIP_mat,decl_sums, grad_sums, left_inst_sums, prop_ES):
     
     CIP_int = []
     for i in range(len(CIP_mat)):
@@ -51,19 +52,23 @@ def roundupCIPvals(CIP_mat,decl_sums, grad_sums, left_inst_sums):
     dec_sums_arr = np.array(decl_sums)
     grad_sums_arr= np.array(grad_sums)
     left_inst_sums_arr= np.array(left_inst_sums)
+    prop_ES = np.array(prop_ES)
     dec_sums_aug = []
     grad_sums_aug=[]
     left_sums_aug=[]
+    prop_ES_aug = []
     for cip_no in CIP_int_unique:
         dec_sums_aug.append(np.sum(dec_sums_arr[find(CIP_int,cip_no)]))
         grad_sums_aug.append(np.sum(grad_sums_arr[find(CIP_int,cip_no)]))
         left_sums_aug.append(np.sum(left_inst_sums_arr[find(CIP_int,cip_no)]))
+        prop_ES_aug.append( np.nansum(prop_ES[find(CIP_int,cip_no)]) )
+
         
     CIP_int_unique = [str(c) for c in CIP_int_unique]
 
-    return CIP_int_unique, dec_sums_aug, grad_sums_aug, left_sums_aug
+    return CIP_int_unique, dec_sums_aug, grad_sums_aug, left_sums_aug, prop_ES
 
-def retDictionaryMajors(CIP,decl_sums, grad_sums, left_inst_sums):
+def retDictionaryMajors(CIP,decl_sums, grad_sums, left_inst_sums, prop_ES):
     
     keys = ['Computer Science',
              'Computer and Information Sciences',
@@ -88,13 +93,13 @@ def retDictionaryMajors(CIP,decl_sums, grad_sums, left_inst_sums):
     decl_sums = [decl_sums[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
     grad_sums = [grad_sums[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
     left_inst_sums = [left_inst_sums[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ]
-    return majs, decl_sums, grad_sums, left_inst_sums
+    prop_ES = [prop_ES[i] for i in range(len(CIP)) if findind(vals,CIP[i]) ] 
+    return majs, decl_sums, grad_sums, left_inst_sums, prop_ES
     
 def retrieveEnroll(mf):
 
     dat = basicInfo("NCWIT_DataV2.csv");    
     rows = dat.shape[0]
-    output_file("bars.html")
     
     CIP_col = dat['CIP# Only']
     CIP_mat = CIP_col.as_matrix()
@@ -102,23 +107,29 @@ def retrieveEnroll(mf):
     graduated_sum = []
     left_inst_sum = []
     declared_sum = []
+    declared_ES = []
     
     for i in range(len(CIP_mat)): 
         dd= dat[dat['CIP# Only']==CIP_mat[i]]
+        ddE = dd[dd['NCWIT Participant'] == 'Extension Services']
         if mf == 'F':
             declared_sum.append(np.nansum(dd['Totals, Female: Total Declared Majors (Tot. F)'].as_matrix()))
+            declared_ES.append(np.nansum(ddE['Totals, Female: Total Declared Majors (Tot. F)'].as_matrix()) )
             graduated_sum.append(np.nansum(dd['Totals, Female: Graduated (Tot. F)'].as_matrix()))
             left_inst_sum.append(np.nansum(dd['Totals, Female: Left Institution (not graduated) (Tot. F)'].as_matrix()))
         else:
             declared_sum.append(np.nansum(dd['Totals, Male: Total Declared Majors (Tot. M)'].as_matrix()))
+            declared_ES.append(np.nansum(ddE['Totals, Male: Total Declared Majors (Tot. M)'].as_matrix()))
             graduated_sum.append(np.nansum(dd['Totals, Male: Graduated (Tot. M)'].as_matrix()))
             left_inst_sum.append(np.nansum(dd['Totals, Male: Left Institution (not graduated) (Tot. M)'].as_matrix()))
             
-    CIP_mat, declared_sum, graduated_sum, left_inst_sum = roundupCIPvals(CIP_mat,declared_sum,graduated_sum, left_inst_sum)
+    CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES = roundupCIPvals(CIP_mat,declared_sum,graduated_sum, left_inst_sum, declared_ES)
     CIP_mat = np.array(CIP_mat)
     declared_array = np.array(declared_sum)
     declared_idx = np.argsort(declared_array)
     declared_sum = declared_array[declared_idx].tolist()
+    declared_ES_array = np.array(declared_ES)
+    declared_ES = declared_ES_array[declared_idx].tolist()
     graduated_sum = np.array(graduated_sum)
     left_inst_sum = np.array(left_inst_sum)
     CIP_mat = CIP_mat[declared_idx]
@@ -128,30 +139,99 @@ def retrieveEnroll(mf):
     left_inst_sum =left_inst_sum[declared_idx]
     left_inst_sum = left_inst_sum.tolist()
     
-    print(graduated_sum)
-    print(left_inst_sum)
-    
     declared_sum = declared_sum[::-1]
     CIP_mat = CIP_mat[::-1]
     graduated_sum = graduated_sum[::-1]
     left_inst_sum = left_inst_sum[::-1]
+    declared_ES = declared_ES[::-1]
     
-    return CIP_mat, declared_sum, graduated_sum, left_inst_sum
+    return CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES
     
 
-CIP_mat_f, declared_sum_f, graduated_sum_f, left_inst_sum_f = retrieveEnroll('F')
-CIP_mat_m, declared_sum_m, graduated_sum_m, left_inst_sum_m = retrieveEnroll('M')
+CIP_mat_f, declared_sum_f, graduated_sum_f, left_inst_sum_f,declared_ESf = retrieveEnroll('F')
+CIP_mat_m, declared_sum_m, graduated_sum_m, left_inst_sum_m, declared_ESm = retrieveEnroll('M')
 declared_sum_tot = list(map(add,declared_sum_m,declared_sum_f))
 graduated_sum_tot = list(map(add,graduated_sum_m,graduated_sum_f))
 left_inst_sum_tot =list(map(add,left_inst_sum_m,left_inst_sum_f))
+declared_ES_tot = list(map(add,declared_ESf, declared_ESm))
 CIP_mat = [float(c) for c in CIP_mat_f ]
-Maj_mat, declared_sums_f,graduated_sum_f, left_inst_sum_f = retDictionaryMajors(CIP_mat, declared_sum_f,graduated_sum_f, left_inst_sum_f)
-Maj_mat, declared_sums_m, graduated_sum_m, left_inst_sum_m = retDictionaryMajors(CIP_mat, declared_sum_m, graduated_sum_m, left_inst_sum_m)
-Maj_mat, declared_sums_tot, graduated_sum_tot, left_inst_sum_tot = retDictionaryMajors(CIP_mat, declared_sum_tot, graduated_sum_tot, left_inst_sum_tot)
+Maj_mat, declared_sums_f,graduated_sum_f, left_inst_sum_f, declared_ESf = retDictionaryMajors(CIP_mat, declared_sum_f,graduated_sum_f, left_inst_sum_f, declared_ESf)
+Maj_mat, declared_sums_m, graduated_sum_m, left_inst_sum_m, declared_ESm = retDictionaryMajors(CIP_mat, declared_sum_m, graduated_sum_m, left_inst_sum_m, declared_ESm)
+Maj_mat, declared_sums_tot, graduated_sum_tot, left_inst_sum_tot, declared_EStot = retDictionaryMajors(CIP_mat, declared_sum_tot, graduated_sum_tot, left_inst_sum_tot, declared_ES_tot)
 
+propESf = list(map(truediv,declared_ESf, declared_sums_f))
+propESm = list(map(truediv,declared_ESm, declared_sums_m))
+propEStot = list(map(truediv,declared_EStot, declared_sum_tot))
+
+
+palettef = []
+palettem =[]
+palettetot= []
+i =0
+for p in propESf:
+    if p>1:
+        p= 0
+        propESf[i] = 0
+        
+    r = int(p*200)
+    g = int(p*200)
+    b = 255
+    code = '#%02x%02x%02x' % (r,g,b)
+    if(p== max(propESf)):
+        code_maxf = code
+    palettef.append(code)
+    i=i+1
+
+i=0
+for p in propESm:
+
+    if p>1:
+        p= 0
+        propESm[i]=0
+    r = int(p*200)
+    g = int(p*200)
+    b = 255
+    code = '#%02x%02x%02x' % (r,g,b)
+    if(p== max(propESm)):
+        code_maxm = code
+    palettem.append(code)
+    i=i+1
+    
+i=0
+for p in propEStot:
+    if p>1:
+        p= 0
+        propEStot[i]=0
+    r = int(p*200)
+    g = int(p*200)
+    b = 255
+    code = '#%02x%02x%02x' % (r,g,b)
+#     if(p== max(propEStot)):
+#         code_maxtot = code
+    palettetot.append(code)
+    i=i+1
+
+code_maxf = palettef[propESf.index(max(propESf))]
+code_maxm = palettem[propESm.index(max(propESm))]
+code_maxtot = palettetot[propEStot.index(max(propEStot))]
+    
+linspf = np.linspace(0,max(propESf),100)*200
+linspf = linspf.tolist()
+linspm = np.linspace(0,max(propESf),100)*200
+linspm = linspm.tolist()
+linsptot = np.linspace(0,max(propESf),100)*200
+linsptot = linsptot.tolist()
+
+p_colorbarf = ['#%02x%02x%02x' % (int(r),int(g),int(b) ) for (r,g,b) in zip(linspf, linspf, [255]*100) ]
+p_colorbarm = ['#%02x%02x%02x' %  (int(r),int(g),int(b) ) for (r,g,b) in zip(linspm, linspm, [255]*100) ]
+p_colorbartot = ['#%02x%02x%02x' %  (int(r),int(g),int(b) ) for (r,g,b) in zip(linsptot, linsptot, [255]*100) ]
+
+print(palettef)
+print(palettem)
+print(palettetot)
 # define data source for bokeh
 sourcef = ColumnDataSource(data=dict(CIP_matf =Maj_mat,dec_sumf=declared_sums_f,tooltip1= graduated_sum_f,tooltip2= left_inst_sum_f ))
-sourcem = ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_summ=declared_sums_m,tooltip1= graduated_sum_m,tooltip2=left_inst_sum_m))
+sourcem = ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_summ=declared_sums_m,tooltip1= graduated_sum_m,tooltip2=left_inst_sum_m ))
 sourcetot= ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_sumtot=declared_sums_tot,tooltip1=graduated_sum_tot,tooltip2=left_inst_sum_tot))
 
 # create figure for bar chart
@@ -163,16 +243,30 @@ hover = HoverTool(tooltips=[
                     ('# Graduated', '@tooltip1'),
                     ('# Left Institution','@tooltip2')
                     ])
-ff = p.vbar(x='CIP_matf', top='dec_sumf', width=0.9, source=sourcef)
-print(ff)
-mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem)
+                    
+mapperf = LinearColorMapper(palette=p_colorbarf , low=0, high=max(propESf))
+mapperm = LinearColorMapper(palette=p_colorbarm , low=0, high=max(propESm))
+mappertot = LinearColorMapper(palette=p_colorbartot , low=0, high=max(propEStot))
+
+# low_color = '#0000ff'
+# high_color = '#c8c8ff'
+mapperf.low_color=  '#0000ff'
+mapperf.high_color = code_maxf
+mapperm.low_color=  '#0000ff'
+mapperm.high_color = code_maxm
+mappertot.low_color=  '#0000ff'
+mappertot.high_color = code_maxtot
+ff = p.vbar(x='CIP_matf', top='dec_sumf', width=0.9, source=sourcef, fill_color=factor_cmap('CIP_matf', palette=palettef, factors=Maj_mat ) )
+mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem, fill_color=factor_cmap('CIP_matm', palette=palettem, factors=Maj_mat) )
 ff.visible = False
 mm.visible = False
-tot =  p.vbar(x='CIP_matm', top='dec_sumtot', width=0.9, source=sourcetot)
+tot =  p.vbar(x='CIP_matm', top='dec_sumtot', width=0.9, source=sourcetot, fill_color=factor_cmap('CIP_matm', palette=palettetot, factors=Maj_mat) )
 p.title.text="Total enrolled by major (Female And Male)"
+# mapper = mappertot
+color_bar = ColorBar(color_mapper=mappertot, location=(0,0))
 # Create checkbox
 checkbox_group = CheckboxGroup(labels=["Female", "Male"], active=[0, 1])
-
+# p.add_layout(color_bar, 'right')
 # Callback function for toggling
 def respond_toggle(attr, old, new):
 
@@ -183,11 +277,19 @@ def respond_toggle(attr, old, new):
             mm.visible = False
             p.y_range.end = max(declared_sums_f) + .1* max(declared_sums_f)
             p.title.text ="Total enrolled by major (Female)"
+            color_bar.color_mapper = mapperf
+#             color_bar = ColorBar(color_mapper=mapperf, location=(0,0))
+#             del p.renderers[-1]
+#             p.add_layout(color_bar, 'right')
         elif 1 in checkbox_group.active:
             mm.visible = True
             ff.visible = False
             p.y_range.end = max(declared_sums_m) +.1* max(declared_sums_m)
             p.title.text="Total enrolled by major (Male)"
+            color_bar.color_mapper = mapperm
+#             color_bar = ColorBar(color_mapper=mapperm, location=(0,0))
+#             del p.renderers[-1]
+#             p.add_layout(color_bar, 'right')
         else:
             ff.visible = False
             mm.visible = False
@@ -198,7 +300,12 @@ def respond_toggle(attr, old, new):
         mm.visible = False
         p.y_range.end = max(declared_sums_tot)+ .1* max(declared_sums_tot)
         p.title.text="Total enrolled by major (Female And Male)"
+        color_bar.color_mapper = mappertot
+#         color_bar = ColorBar(color_mapper=mappertot, location=(0,0))
+#         del p.renderers[-1]
+#         p.add_layout(color_bar, 'right')
 p.add_tools(hover)
+p.add_layout(color_bar, 'right')
 for w in [checkbox_group]:
     w.on_change('active',respond_toggle)
 p.left[0].formatter.use_scientific = False
