@@ -34,8 +34,11 @@ Emily was responsible for initial exploration of the data set using Tableau. She
 <h5> Requirements: </h5>
 
 Python3 (version 3)
+
 Numpy v01.14.1
+
 Pandas v0.22.0
+
 Bokeh v0.12.14
 
 <h5> Command to Run Code <h5>
