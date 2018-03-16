@@ -7,7 +7,7 @@ import numpy as np
 from bokeh.io import show, export_png, output_file, curdoc
 from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, NumeralTickFormatter, HoverTool,LinearColorMapper, ColorBar
-from bokeh.models.widgets import CheckboxGroup
+from bokeh.models.widgets import CheckboxGroup, Paragraph, Div
 from bokeh.layouts import row, widgetbox, layout, column
 from bokeh.palettes import Spectral6
 from bokeh.transform import factor_cmap
@@ -146,7 +146,32 @@ def retrieveEnroll(mf):
     declared_ES = declared_ES[::-1]
     
     return CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES
-    
+
+# Make paragraph section for discussion
+div_title = Div(text="""Distribution of total number of majors decalred for males and females""",
+                style={"font-size": "30px", "text-align": "center"}, width=1000, height=60)
+
+# Make paragraph section for discussion
+div_RadGroup = Div(text="""Select Data Source: &nbsp""",
+                   style={"font-size": "18px", "text-align": "right"}, width=400, height=40)
+                   
+# Make paragraph sections for discussion
+p1 = Paragraph(text=
+    """The goal of the visualization is to display the distribution by majors of the total number of students who declared
+        their majors. The data was summed across years to get a sense of the distribution for the entire time frame. The checkbox group on the right 
+        can be used to toggle between Male and Female data. When both are selected, the graph displays the total number of students (male and female). 
+        NOTE: When toggling from Male to Female and vice versa, the y axis range changes. This is because number of females declaring their majors
+        was far lower than the number of males. When the axis was kept constant, the female data wasn't quite as salient. Based on Dr. Lecia Barker's comments,
+        it seemed that NCWIT was interested especially in the data pertaining to females. So we chose salience over consistency.""",
+     style={"font-size": "18px"}, width=1000, height=145)
+p2 = Paragraph(text=
+    """We see that for both males and females, the most dominant major is Computer Science. Hoevering over the bars in the bar chart reveals a tooltip
+        that shows the total number of students who graduated and also those who left the institution for the corresponding majors. The colors of the bars
+        indicate the proportion of NCWIT participants who were part of the Extended Services program. """,
+     style={"font-size": "18px"}, width=1000, height=125)
+p3 = Paragraph(text=
+    """ """,
+     style={"font-size": "18px"}, width=1000, height=125)
 
 CIP_mat_f, declared_sum_f, graduated_sum_f, left_inst_sum_f,declared_ESf = retrieveEnroll('F')
 CIP_mat_m, declared_sum_m, graduated_sum_m, left_inst_sum_m, declared_ESm = retrieveEnroll('M')
@@ -206,8 +231,6 @@ for p in propEStot:
     g = int(p*200)
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
-#     if(p== max(propEStot)):
-#         code_maxtot = code
     palettetot.append(code)
     i=i+1
 
@@ -235,7 +258,7 @@ sourcem = ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_summ=declared_sums_m
 sourcetot= ColumnDataSource(data=dict(CIP_matm =Maj_mat ,dec_sumtot=declared_sums_tot,tooltip1=graduated_sum_tot,tooltip2=left_inst_sum_tot))
 
 # create figure for bar chart
-p = figure(x_range=Maj_mat,plot_width=800, plot_height=500,toolbar_location=None)
+p = figure(x_range=Maj_mat,plot_width=1000, plot_height=600,toolbar_location=None)
 p.y_range.start = 0
 p.xaxis.major_label_orientation = pi/4
 
@@ -248,8 +271,6 @@ mapperf = LinearColorMapper(palette=p_colorbarf , low=0, high=max(propESf))
 mapperm = LinearColorMapper(palette=p_colorbarm , low=0, high=max(propESm))
 mappertot = LinearColorMapper(palette=p_colorbartot , low=0, high=max(propEStot))
 
-# low_color = '#0000ff'
-# high_color = '#c8c8ff'
 mapperf.low_color=  '#0000ff'
 mapperf.high_color = code_maxf
 mapperm.low_color=  '#0000ff'
@@ -261,12 +282,12 @@ mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem, fill_color=
 ff.visible = False
 mm.visible = False
 tot =  p.vbar(x='CIP_matm', top='dec_sumtot', width=0.9, source=sourcetot, fill_color=factor_cmap('CIP_matm', palette=palettetot, factors=Maj_mat) )
-p.title.text="Total enrolled by major (Female And Male)"
-# mapper = mappertot
+# p.title.text="Total enrolled by major (Female And Male)"
+
 color_bar = ColorBar(color_mapper=mappertot, location=(0,0))
 # Create checkbox
 checkbox_group = CheckboxGroup(labels=["Female", "Male"], active=[0, 1])
-# p.add_layout(color_bar, 'right')
+
 # Callback function for toggling
 def respond_toggle(attr, old, new):
 
@@ -276,20 +297,16 @@ def respond_toggle(attr, old, new):
             ff.visible = True
             mm.visible = False
             p.y_range.end = max(declared_sums_f) + .1* max(declared_sums_f)
-            p.title.text ="Total enrolled by major (Female)"
+            div_title.text ="""Distribution of total number of majors decalred for females"""
             color_bar.color_mapper = mapperf
-#             color_bar = ColorBar(color_mapper=mapperf, location=(0,0))
-#             del p.renderers[-1]
-#             p.add_layout(color_bar, 'right')
+
         elif 1 in checkbox_group.active:
             mm.visible = True
             ff.visible = False
             p.y_range.end = max(declared_sums_m) +.1* max(declared_sums_m)
-            p.title.text="Total enrolled by major (Male)"
+            div_title.text="""Distribution of total number of majors decalred for males"""
             color_bar.color_mapper = mapperm
-#             color_bar = ColorBar(color_mapper=mapperm, location=(0,0))
-#             del p.renderers[-1]
-#             p.add_layout(color_bar, 'right')
+
         else:
             ff.visible = False
             mm.visible = False
@@ -299,20 +316,27 @@ def respond_toggle(attr, old, new):
         ff.visible = False
         mm.visible = False
         p.y_range.end = max(declared_sums_tot)+ .1* max(declared_sums_tot)
-        p.title.text="Total enrolled by major (Female And Male)"
+        div_title.text="""Distribution of total number of majors decalred for males and females"""
         color_bar.color_mapper = mappertot
-#         color_bar = ColorBar(color_mapper=mappertot, location=(0,0))
-#         del p.renderers[-1]
-#         p.add_layout(color_bar, 'right')
+
 p.add_tools(hover)
 p.add_layout(color_bar, 'right')
 for w in [checkbox_group]:
     w.on_change('active',respond_toggle)
 p.left[0].formatter.use_scientific = False
+
+p.xaxis.axis_label_text_font_size = "18px"
+p.xaxis.major_label_text_font_size = "18px"
+
 p.yaxis[0].formatter = NumeralTickFormatter(format='0,0')
+p.yaxis.axis_label_text_font_size = "18px"
+p.yaxis.major_label_text_font_size = "18px"
+
 options = widgetbox(checkbox_group)
-doc_layout = layout(column(options))
+# doc_layout = layout(column(options))
+# Define layout of glyphs on the page
+layout = column(div_title, row(p, checkbox_group), p1, p2, p3)
 curdoc().clear()
-curdoc().add_root(row(p, doc_layout))
+curdoc().add_root(layout)
 curdoc().title = "checkbox"
 
