@@ -13,13 +13,14 @@
 import pandas as pd
 import numpy as np
 import bokeh
-from bokeh.plotting import figure, output_file, show
-from bokeh.io import curdoc, show, output_file
-from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
+from bokeh.io import curdoc
+from bokeh.models import ColumnDataSource, Legend
 from bokeh.palettes import Spectral6
-from bokeh.models.widgets import Panel, Tabs
+from bokeh.models.widgets import Panel, Tabs, Paragraph, Div
+from bokeh.layouts import layout, column, row
 
-ncwit = pd.read_csv('NCWIT_DataV2_RawData.csv')
+ncwit = pd.read_csv('NCWIT_DataV2_RawData.csv', low_memory=False)
 
 #   Delete all the records which don't have an Associated ID -> all values are NaN
 ncwit = ncwit[np.isfinite(ncwit['Record#'])]
@@ -278,45 +279,100 @@ for i in range(0, len(femaleleftaa)):
 topyval = max(max(ratiogradex),max(ratiogradaa),max(ratioenrollex),max(ratioenrollaa),max(ratioleftex),max(ratioleftaa))
 topyval = topyval + float(topyval/10)
 
-#   Most of the code is manipulated from bokeh tutorials mentioned in the first few starting lines
-# output to static HTML file
-output_file("lines.html")
+# Make title
+div_title_filler = Div(text="""&nbsp &nbsp &nbsp""",
+                       style={"font-size": "30px", "text-align": "center"}, width=600, height=80)
+div_title = Div(text="""Ratio of Female to Male Students for Extension Services vs. Academic Alliance""",
+                style={"font-size": "30px", "text-align": "center"}, width=600, height=80)
 
 #   Plotting the first visualization -> for the Graduated Attribute
-p1 = figure(x_range=yrex, y_range=(0,topyval), plot_height=500, plot_width = 1000, title="Visualization 2", x_axis_label='School Year', y_axis_label='Females to Male Ratio')
-p1.line(yrex, ratiogradex, legend="Extension Services", line_width=2, color = 'red', line_dash="4 4")
-p1.line(yraa, ratiogradaa, legend="Academic Alliance", line_width=2, color = 'blue')
-p1.circle(yrex, ratiogradex, legend="Extension Services", size=7, color = 'red')
-p1.circle(yraa, ratiogradaa, legend="Academic Alliance", size=7, color = 'blue')
+p1 = figure(x_range=yrex, y_range=(0,topyval), plot_height=500, plot_width=1000,
+            x_axis_label='School Year', y_axis_label='Female to Male Ratio', tools="pan,wheel_zoom,box_zoom,reset")
+l1_ES = p1.line(yrex_en, ratioenrollex, line_width=2, color='red', line_dash="4 4", muted_alpha=0.2)
+l1_AA = p1.line(yraa_en, ratioenrollaa, line_width=2, color='blue', muted_alpha=0.2)
+c1_ES = p1.circle(yrex_en, ratioenrollex, radius=0.1, color='red', muted_alpha=0.2)
+c1_AA = p1.circle(yraa_en, ratioenrollaa, radius=0.1, color='blue', muted_alpha=0.2)
+leg1 = Legend(items=[
+    ("Extension Services", [l1_ES, c1_ES]),
+    ("Academic Alliance", [l1_AA, c1_AA])],
+    location=(250, 5))
+p1.add_layout(leg1, 'above')
+p1.legend.border_line_width = 1
+p1.legend.border_line_color = "black"
 p1.legend.orientation = "horizontal"
-p1.legend.location = "top_center"
-p1.legend.click_policy="hide"
-tab1 = Panel(child=p1,title="Graduated")
+p1.legend.label_text_font_size = "18px"
+p1.legend.click_policy = "mute"
+p1.xaxis.major_label_orientation = np.pi/4
+p1.xaxis.axis_label_text_font_size = "18px"
+p1.xaxis.major_label_text_font_size = "18px"
+p1.yaxis.axis_label_text_font_size = "18px"
+p1.yaxis.major_label_text_font_size = "18px"
+p1.toolbar.logo = None
+tab1 = Panel(child=p1, title="New Enrollments")
 
 #   Plotting the first visualization -> for the New Enrollments Attribute
-p2 = figure(x_range=yrex_en, y_range=(0,topyval), plot_height=500, plot_width = 1000, title="Visualization 2", x_axis_label='School Year', y_axis_label='Females to Male Ratio')
-p2.line(yrex_en, ratioenrollex, legend="Extension Services", line_width=2, color = 'red', line_dash="4 4")
-p2.line(yraa_en, ratioenrollaa, legend="Academic Alliance", line_width=2, color = 'blue')
-p2.circle(yrex_en, ratioenrollex, legend="Extension Services", size=7, color = 'red')
-p2.circle(yraa_en, ratioenrollaa, legend="Academic Alliance", size=7, color = 'blue')
+p2 = figure(x_range=yrex_en, y_range=(0,topyval), plot_height=500, plot_width = 1000,
+            x_axis_label='School Year', y_axis_label='Female to Male Ratio', tools="pan,wheel_zoom,box_zoom,reset")
+l2_ES = p2.line(yrex, ratiogradex, line_width=2, color='red', line_dash="4 4", muted_alpha=0.2)
+l2_AA = p2.line(yraa, ratiogradaa, line_width=2, color='blue', muted_alpha=0.2)
+c2_ES = p2.circle(yrex, ratiogradex, radius=0.1, color='red', muted_alpha=0.2)
+c2_AA = p2.circle(yraa, ratiogradaa, radius=0.1, color='blue', muted_alpha=0.2)
+leg2 = Legend(items=[
+    ("Extension Services", [l2_ES, c2_ES]),
+    ("Academic Alliance", [l2_AA, c2_AA])],
+    location=(250, 5))
+p2.add_layout(leg2, 'above')
+p2.legend.border_line_width = 1
+p2.legend.border_line_color = "black"
 p2.legend.orientation = "horizontal"
-p2.legend.location = "top_center"
-p2.legend.click_policy="hide"
-tab2 = Panel(child=p2,title="Enrolled")
+p2.legend.label_text_font_size = "18px"
+p2.legend.click_policy = "mute"
+p2.xaxis.major_label_orientation = np.pi/4
+p1.xaxis.axis_label_text_font_size = "18px"
+p2.xaxis.major_label_text_font_size = "18px"
+p2.yaxis.axis_label_text_font_size = "18px"
+p2.yaxis.major_label_text_font_size = "18px"
+p2.toolbar.logo = None
+tab2 = Panel(child=p2, title="Graduated")
 
 #   Plotting the first visualization -> for the Left Institution Attribute
-p3 = figure(x_range=yrex_le, y_range=(0,topyval), plot_height=500, plot_width = 1000, title="Visualization 2", x_axis_label='School Year', y_axis_label='Females to Male Ratio')
-p3.line(yrex_le, ratioleftex, legend="Extension Services", line_width=2, color = 'red', line_dash="4 4")
-p3.line(yraa_le, ratioleftaa, legend="Academic Alliance", line_width=2, color = 'blue')
-p3.circle(yrex_le, ratioleftex, legend="Extension Services", size=7, color = 'red')
-p3.circle(yraa_le, ratioleftaa, legend="Academic Alliance", size=7, color = 'blue')
+p3 = figure(x_range=yrex_le, y_range=(0,topyval), plot_height=500, plot_width = 1000,
+            x_axis_label='School Year', y_axis_label='Female to Male Ratio', tools="pan,wheel_zoom,box_zoom,reset")
+l3_ES = p3.line(yrex_le, ratioleftex, line_width=2, color='red', line_dash="4 4", muted_alpha=0.2)
+l3_AA = p3.line(yraa_le, ratioleftaa, line_width=3, color='blue', muted_alpha=0.2)
+c3_ES = p3.circle(yrex_le, ratioleftex, radius=0.1, color='red', muted_alpha=0.2)
+c3_AA = p3.circle(yraa_le, ratioleftaa, radius=0.1, color='blue', muted_alpha=0.2)
+leg3 = Legend(items=[
+    ("Extension Services", [l3_ES, c3_ES]),
+    ("Academic Alliance", [l3_AA, c3_AA])],
+    location=(250, 5))
+p3.add_layout(leg3, 'above')
+p3.legend.border_line_width = 1
+p3.legend.border_line_color = "black"
 p3.legend.orientation = "horizontal"
-p3.legend.location = "top_center"
-p3.legend.click_policy="hide"
+p3.legend.label_text_font_size = "18px"
+p3.legend.click_policy = "mute"
+p3.xaxis.major_label_orientation = np.pi/4
+p3.xaxis.axis_label_text_font_size = "18px"
+p3.xaxis.major_label_text_font_size = "18px"
+p3.yaxis.axis_label_text_font_size = "18px"
+p3.yaxis.major_label_text_font_size = "18px"
+p3.toolbar.logo = None
 tab3 = Panel(child=p3, title="Left Institution")
 
-tabs = Tabs(tabs=[ tab1, tab2, tab3 ])
-curdoc().add_root(tabs)
 
-# show the results
-show(tabs)
+# Make paragraph sections for discussion
+par1 = Paragraph(text=
+    """First paragraph...""",
+     style={"font-size": "18px"}, width=1000, height=100)
+par2 = Paragraph(text=
+    """Second paragraph....""",
+     style={"font-size": "18px"}, width=1000, height=125)
+par3 = Paragraph(text=
+    """Third paragraph...""",
+     style={"font-size": "18px"}, width=1000, height=125)
+
+tabs = Tabs(tabs=[tab1, tab2, tab3], width=400)
+layout = column(div_title, tabs, par1, par2, par3)
+curdoc().add_root(layout)
+curdoc().title = "Visualization 2"
