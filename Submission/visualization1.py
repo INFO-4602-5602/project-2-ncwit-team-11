@@ -148,7 +148,7 @@ def retrieveEnroll(mf):
     return CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES
 
 # Make paragraph section for discussion
-div_title = Div(text="""Distribution of total number of majors decalred for males and females""",
+div_title = Div(text="""Distribution of total number of majors declared for males and females""",
                 style={"font-size": "30px", "text-align": "center"}, width=1000, height=60)
 
 # Make paragraph section for discussion
@@ -199,8 +199,8 @@ for p in propESf:
         p= 0
         propESf[i] = 0
 
-    r = int(p*250)
-    g = int(p*250)
+    r = int(np.around(p*255,0))
+    g = int(np.around(p*255,0))
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
     if(p== max(propESf)):
@@ -214,8 +214,8 @@ for p in propESm:
     if p>1:
         p= 0
         propESm[i]=0
-    r = int(p*250)
-    g = int(p*250)
+    r = int(np.around(p*255,0))
+    g = int(np.around(p*255,0))
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
     if(p== max(propESm)):
@@ -228,8 +228,8 @@ for p in propEStot:
     if p>1:
         p= 0
         propEStot[i]=0
-    r = int(p*250)
-    g = int(p*250)
+    r = int(np.around(p*255,0))
+    g = int(np.around(p*255,0))
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
     palettetot.append(code)
@@ -239,20 +239,21 @@ code_maxf = palettef[propESf.index(max(propESf))]
 code_maxm = palettem[propESm.index(max(propESm))]
 code_maxtot = palettetot[propEStot.index(max(propEStot))]
 
-linspf = np.linspace(0,max(propESf),100)*250
+linspf = np.linspace(0,1,100)*255
 linspf = linspf.tolist()
-linspm = np.linspace(0,max(propESf),100)*250
+linspm = np.linspace(0,1,100)*255
 linspm = linspm.tolist()
-linsptot = np.linspace(0,max(propESf),100)*250
+linsptot = np.linspace(0,1,100)*255
 linsptot = linsptot.tolist()
 
-p_colorbarf = ['#%02x%02x%02x' % (int(r),int(g),int(b) ) for (r,g,b) in zip(linspf, linspf, [255]*100) ]
-p_colorbarm = ['#%02x%02x%02x' %  (int(r),int(g),int(b) ) for (r,g,b) in zip(linspm, linspm, [255]*100) ]
-p_colorbartot = ['#%02x%02x%02x' %  (int(r),int(g),int(b) ) for (r,g,b) in zip(linsptot, linsptot, [255]*100) ]
+p_colorbarf = ['#%02x%02x%02x' % (int(np.around(r,0)),int(np.around(g,0)),int(b) ) for (r,g,b) in zip(linspf, linspf, [255]*100) ]
+p_colorbarm = ['#%02x%02x%02x' %  (int(np.around(r,0)),int(np.around(g,0)),int(b) ) for (r,g,b) in zip(linspm, linspm, [255]*100) ]
+p_colorbartot = ['#%02x%02x%02x' %  (int(np.around(r,0)),int(np.around(g,0)),int(b) ) for (r,g,b) in zip(linsptot, linsptot, [255]*100) ]
 
-print(max(propESf))
-print(max(propESm))
-print(max(propEStot))
+# print(p_colorbartot)
+# print(max(propESf))
+# print(max(propESm))
+# print(max(propEStot))
 
 print(palettef)
 print(palettem)
@@ -274,7 +275,7 @@ hover = HoverTool(tooltips=[
 
 mapperf = LinearColorMapper(palette=p_colorbarf , low=0, high=max(propESf))
 mapperm = LinearColorMapper(palette=p_colorbarm , low=0, high=max(propESm))
-mappertot = LinearColorMapper(palette=p_colorbartot , low=0, high=max(propEStot))
+mappertot = LinearColorMapper(palette=p_colorbartot , low=0, high=1)
 
 mapperf.low_color=  '#0000ff'
 mapperf.high_color = code_maxf
@@ -282,6 +283,7 @@ mapperm.low_color=  '#0000ff'
 mapperm.high_color = code_maxm
 mappertot.low_color=  '#0000ff'
 mappertot.high_color = code_maxtot
+# mappertot.high_color = '#ffffff'
 ff = p.vbar(x='CIP_matf', top='dec_sumf', width=0.9, source=sourcef, fill_color=factor_cmap('CIP_matf', palette=palettef, factors=Maj_mat ) )
 mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem, fill_color=factor_cmap('CIP_matm', palette=palettem, factors=Maj_mat) )
 ff.visible = False
@@ -301,27 +303,28 @@ def respond_toggle(attr, old, new):
             ff.visible = True
             mm.visible = False
             p.y_range.end = max(declared_sums_f) + .1* max(declared_sums_f)
-            div_title.text ="""Distribution of total number of majors decalred for females"""
-            color_bar.color_mapper = mapperf
+            div_title.text ="""Distribution of total number of majors declared for females"""
+#             color_bar.color_mapper = mapperf
 
         elif 1 in checkbox_group.active:
             mm.visible = True
             ff.visible = False
             p.y_range.end = max(declared_sums_m) +.1* max(declared_sums_m)
-            div_title.text="""Distribution of total number of majors decalred for males"""
-            color_bar.color_mapper = mapperm
+            div_title.text="""Distribution of total number of majors declared for males"""
+#             color_bar.color_mapper = mapperm
 
         else:
             ff.visible = False
             mm.visible = False
+            div_title.text=""" """
 
     else:
         tot.visible = 1 in checkbox_group.active
         ff.visible = False
         mm.visible = False
         p.y_range.end = max(declared_sums_tot)+ .1* max(declared_sums_tot)
-        div_title.text="""Distribution of total number of majors decalred for males and females"""
-        color_bar.color_mapper = mappertot
+        div_title.text="""Distribution of total number of majors declared for males and females"""
+#         color_bar.color_mapper = mappertot
 
 p.add_tools(hover)
 p.add_layout(color_bar, 'right')
