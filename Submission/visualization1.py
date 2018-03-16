@@ -199,8 +199,8 @@ for p in propESf:
         p= 0
         propESf[i] = 0
 
-    r = int(p*200)
-    g = int(p*200)
+    r = int(p*250)
+    g = int(p*250)
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
     if(p== max(propESf)):
@@ -214,8 +214,8 @@ for p in propESm:
     if p>1:
         p= 0
         propESm[i]=0
-    r = int(p*200)
-    g = int(p*200)
+    r = int(p*250)
+    g = int(p*250)
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
     if(p== max(propESm)):
@@ -228,8 +228,8 @@ for p in propEStot:
     if p>1:
         p= 0
         propEStot[i]=0
-    r = int(p*200)
-    g = int(p*200)
+    r = int(p*250)
+    g = int(p*250)
     b = 255
     code = '#%02x%02x%02x' % (r,g,b)
     palettetot.append(code)
@@ -239,16 +239,20 @@ code_maxf = palettef[propESf.index(max(propESf))]
 code_maxm = palettem[propESm.index(max(propESm))]
 code_maxtot = palettetot[propEStot.index(max(propEStot))]
 
-linspf = np.linspace(0,max(propESf),100)*200
+linspf = np.linspace(0,max(propESf),100)*250
 linspf = linspf.tolist()
-linspm = np.linspace(0,max(propESf),100)*200
+linspm = np.linspace(0,max(propESf),100)*250
 linspm = linspm.tolist()
-linsptot = np.linspace(0,max(propESf),100)*200
+linsptot = np.linspace(0,max(propESf),100)*250
 linsptot = linsptot.tolist()
 
 p_colorbarf = ['#%02x%02x%02x' % (int(r),int(g),int(b) ) for (r,g,b) in zip(linspf, linspf, [255]*100) ]
 p_colorbarm = ['#%02x%02x%02x' %  (int(r),int(g),int(b) ) for (r,g,b) in zip(linspm, linspm, [255]*100) ]
 p_colorbartot = ['#%02x%02x%02x' %  (int(r),int(g),int(b) ) for (r,g,b) in zip(linsptot, linsptot, [255]*100) ]
+
+print(max(propESf))
+print(max(propESm))
+print(max(propEStot))
 
 print(palettef)
 print(palettem)
@@ -283,7 +287,6 @@ mm = p.vbar(x='CIP_matm', top='dec_summ', width=0.9, source=sourcem, fill_color=
 ff.visible = False
 mm.visible = False
 tot =  p.vbar(x='CIP_matm', top='dec_sumtot', width=0.9, source=sourcetot, fill_color=factor_cmap('CIP_matm', palette=palettetot, factors=Maj_mat) )
-# p.title.text="Total enrolled by major (Female And Male)"
 
 color_bar = ColorBar(color_mapper=mappertot, location=(0,0))
 # Create checkbox
