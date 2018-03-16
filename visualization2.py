@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 import bokeh
 from bokeh.plotting import figure, output_file, show
-from bokeh.io import show, output_file
+from bokeh.io import curdoc, show, output_file
 from bokeh.models import ColumnDataSource
 from bokeh.palettes import Spectral6
 from bokeh.models.widgets import Panel, Tabs
@@ -316,6 +316,7 @@ p3.legend.click_policy="hide"
 tab3 = Panel(child=p3, title="Left Institution")
 
 tabs = Tabs(tabs=[ tab1, tab2, tab3 ])
+curdoc().add_root(tabs)
 
 # show the results
 show(tabs)
