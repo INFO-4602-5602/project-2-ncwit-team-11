@@ -6,20 +6,19 @@
 
 Our first visualization is an interactive bar plot that plots the total number of students that have declared each major. The user can choose to visualize only males, only females, or all students. NCWIT involvement (number of students at schools with Academic Alliance or Extension Services) is distinguished by color. The tooltip shows the total number of students who graduated and left the institution. We chose to update the y-axis range depending on the information being shown because there are about 6 times as many males as females, so the female-only display would result in a very small visualization if we were to keep the y-axis range constant. This visualization does not include the element of time.
 
-Corresponding code: visualization1.py
+<p>Corresponding code: **visualization1.py**</p>
 
 <h3> Visualization #2: </h3>
 
 Our second visualization is an interactive line graph that plots the ratio of females to males each year. The user can choose to visualize the sex ratio for the number of new enrollments, total graduated, or left institution. There are separate lines that represent different types of NCWIT involvement (Academic Alliance or Extension Services), and these lines can be toggled on or off by clicking on them in the legend. We chose to keep the y-axis range constant for all of the possible attributes because we are visualizing a ratio between males and females that we expect to remain similar across these attributes.
 
-Corresponding code: visualization2.py
+<p>Corresponding code: **visualization2.py**</p>
 
 
 <h3> Visualization #3: </h3>
-Our third visualization is an interactive line graph that distinguishes between schools that offer Bachelor’s degrees only, Bachelor’s and Master’s degrees, or Bachelor’s, Master’s, and Ph.D. degrees. The user can choose to visualize the number of female new enrollments, total graduated, or left institution each year. These data are normalized by the number of institutions, and the tooltip shows the number of institutions for each year. We chose to update the y-xis range depending on the information being shown because there are about 9 times as many females enrolled per institution than females who left per institution, so the "left institution" display would result in a very small visualization if we were to keep the y-axis range constant.\  
+Our third visualization is an interactive line graph that distinguishes between schools that offer Bachelor’s degrees only, Bachelor’s and Master’s degrees, or Bachelor’s, Master’s, and Ph.D. degrees. The user can choose to visualize the number of female new enrollments, total graduated, or left institution each year. These data are normalized by the number of institutions, and the tooltip shows the number of institutions for each year. We chose to update the y-xis range depending on the information being shown because there are about 9 times as many females enrolled per institution than females who left per institution, so the "left institution" display would result in a very small visualization if we were to keep the y-axis range constant.
 
-Corresponding code: visualization3.py
-
+<p>Corresponding code: **visualization3.py**</p>
 
 <h2> Design Process: </h2>
 
