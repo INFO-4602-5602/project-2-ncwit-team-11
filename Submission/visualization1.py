@@ -164,15 +164,12 @@ p1 = Paragraph(text=
         NOTE: When toggling from Male to Female and vice versa, the y axis range changes. This is because number of females declaring their majors
         was far lower than the number of males. When the axis was kept constant, the female data wasn't quite as salient. Based on Dr. Lecia Barker's comments,
         it seemed that NCWIT was interested especially in the data pertaining to females, so we chose salience over consistency.""",
-     style={"font-size": "18px"}, width=1000, height=155)
+     style={"font-size": "18px"}, width=1000, height=175)
 p2 = Paragraph(text=
-    """We see that for both males and females, the most dominant major is Computer Science. Hoevering over the bars in the bar chart reveals a tooltip
+    """We see that for both males and females, the most dominant major is Computer Science. Hovering over the bars in the bar chart reveals a tooltip
         that shows the total number of students who graduated and also those who left the institution for the corresponding majors. The colors of the bars
         indicate the proportion of NCWIT participants who were part of the Extension Services program - lighter bar color indicates a greater proportion of
         NCWIT participants who were part of the Extension Services program.""",
-     style={"font-size": "18px"}, width=1000, height=125)
-p3 = Paragraph(text=
-    """ """,
      style={"font-size": "18px"}, width=1000, height=125)
 
 CIP_mat_f, declared_sum_f, graduated_sum_f, left_inst_sum_f,declared_ESf = retrieveEnroll('F')
@@ -324,7 +321,7 @@ p.yaxis.major_label_text_font_size = "18px"
 
 options = widgetbox(checkbox_group)
 
-layout = column(div_title, row(p, checkbox_group), p1, p2, p3)
+layout = column(div_title, row(p, checkbox_group), p1, p2)
 curdoc().clear()
 curdoc().add_root(layout)
-curdoc().title = "checkbox"
+curdoc().title = "Visualization 1"

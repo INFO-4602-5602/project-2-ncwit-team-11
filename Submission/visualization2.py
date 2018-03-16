@@ -280,10 +280,11 @@ topyval = max(max(ratiogradex),max(ratiogradaa),max(ratioenrollex),max(ratioenro
 topyval = topyval + float(topyval/10)
 
 # Make title
-div_title_filler = Div(text="""&nbsp &nbsp &nbsp""",
+div_title_filler = Div(text="""ahhhhhhhhhhhhhhhhhhhhh""", #&nbsp &nbsp &nbsp
                        style={"font-size": "30px", "text-align": "center"}, width=600, height=80)
-div_title = Div(text="""Ratio of Female to Male Students for Extension Services vs. Academic Alliance""",
-                style={"font-size": "30px", "text-align": "center"}, width=600, height=80)
+div_title = Div(text="""&nbsp &nbsp &nbsp &nbsp &nbsp Ratio of Female to Male Students for 
+	                    &nbsp &nbsp &nbsp &nbsp &nbsp Extension Services vs. Academic Alliance""",
+                style={"font-size": "30px", "text-align": "center"}, width=750, height=80)
 
 #   Plotting the first visualization -> for the Graduated Attribute
 p1 = figure(x_range=yrex, y_range=(0,topyval), plot_height=500, plot_width=1000,
