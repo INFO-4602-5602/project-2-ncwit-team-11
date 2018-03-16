@@ -46,3 +46,8 @@ for the second and third visualizations to create a sense of continuity over
 time.
 
 How to Run the Project
+
+Make sure you have python3 installed.
+Also install bokeh with pip3.
+After changing directory to the project folder, run "bokeh serve --show visualization1.py" (similarly for 2 & 3).
+
