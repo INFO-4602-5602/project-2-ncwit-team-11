@@ -149,8 +149,9 @@ def retrieveEnroll(mf):
     return CIP_mat, declared_sum, graduated_sum, left_inst_sum, declared_ES
 
 # Make paragraph section for discussion
-div_title = Div(text="""Distribution of total number of majors declared for males and females""",
-                style={"font-size": "30px", "text-align": "center"}, width=1000, height=60)
+div_title = Div(text="""&nbsp &nbsp &nbsp Distribution of total number of students (male and female) 
+                        &nbsp &nbsp &nbsp &nbsp &nbsp across declared majors""",
+                style={"font-size": "30px", "text-align": "center"}, width=1000, height=100)
 
 # Make paragraph section for discussion
 div_RadGroup = Div(text="""Select Data Source: &nbsp""",
@@ -283,14 +284,14 @@ def respond_toggle(attr, old, new):
             ff.visible = True
             mm.visible = False
             p.y_range.end = max(declared_sums_f) + .1* max(declared_sums_f)
-            div_title.text ="""Distribution of total number of majors declared for females"""
+            div_title.text ="""Distribution of number of female students across declared majors"""
 #             color_bar.color_mapper = mapperf
 
         elif 1 in checkbox_group.active:
             mm.visible = True
             ff.visible = False
             p.y_range.end = max(declared_sums_m) +.1* max(declared_sums_m)
-            div_title.text="""Distribution of total number of majors declared for males"""
+            div_title.text="""Distribution of number of male students across declared majors"""
 #             color_bar.color_mapper = mapperm
 
         else:
@@ -303,7 +304,7 @@ def respond_toggle(attr, old, new):
         ff.visible = False
         mm.visible = False
         p.y_range.end = max(declared_sums_tot)+ .1* max(declared_sums_tot)
-        div_title.text="""Distribution of total number of majors declared for males and females"""
+        div_title.text="""Distribution of total number of students (male and female) across declared majors"""
 #         color_bar.color_mapper = mappertot
 
 p.add_tools(hover)
@@ -316,6 +317,7 @@ p.xaxis.axis_label_text_font_size = "15px"
 p.xaxis.major_label_text_font_size = "15px"
 
 p.yaxis[0].formatter = NumeralTickFormatter(format='0,0')
+p.yaxis.axis_label = "Total # of Students"
 p.yaxis.axis_label_text_font_size = "18px"
 p.yaxis.major_label_text_font_size = "18px"
 
