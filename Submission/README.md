@@ -23,11 +23,11 @@ Our third visualization is an interactive line graph that distinguishes between 
 
 <h2> Design Process: </h2>
 
-We started the design process by using Tableau to explore the data. In doing so, we realized that there was a significant amount of missing data, and chose to focus on attributes that were missing the least amount of data. We refined these initial exploratory visualizations and brainstormed ideas about how to add interactivity.
+We started the design process by using Tableau to explore the data. In doing so, we realized that there was a significant amount of missing data, and chose to focus on attributes that were missing the least amount of data. We refined these initial exploratory visualizations and brainstormed ideas about how to add interactivity. We used a bar plot for the first visualization to maintain distinction between majors, while we used line graphs for the second and third visualizations to create a sense of continuity over time.
 
 <h2> Team Roles: </h2>
 
-Emily was responsible for initial exploration of the data set using Tableau. She also compiled information about the visualizations and design process. Shruthi was responsible for creating our first visualization. Shantanu was responsible for creating our second visualizations. Andrew was responsible for creating our third visualization. All members were involved with deciding which attributes to visualize and how to visualize them. We used a bar plot for the first visualization to maintain distinction between majors, while we used line graphs for the second and third visualizations to create a sense of continuity over time.
+Emily was responsible for initial exploration of the data set using Tableau. She also compiled information about the visualizations and design process. Shruthi was responsible for creating our first visualization. Shantanu was responsible for creating our second visualizations. Andrew was responsible for creating our third visualization. All members were involved with deciding which attributes to visualize and how to visualize them.
 
 <h3> How to Run the Project: </h3>
 
